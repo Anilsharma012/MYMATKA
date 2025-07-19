@@ -89,7 +89,7 @@ const Dashboard = () => {
               </div>
               <div>
                 <h1 className="text-matka-gold font-bold text-lg sm:text-xl lg:text-2xl">
-                  Matka Hub
+                  TheMatka Hub
                 </h1>
                 <p className="text-muted-foreground text-xs sm:text-sm hidden sm:block">
                   Welcome back,{" "}
