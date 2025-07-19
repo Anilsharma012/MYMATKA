@@ -120,7 +120,8 @@ router.post("/declare/:gameId", adminAuth, disableTestLimits, async (req, res) =
       jodi: jodiResult || '',  
       haruf: harufResult || '',
       crossing: crossingResult || '',
-      fallback: resultToUse.trim(),
+    fallback: (resultToUse || '').trim()
+
     });
     
 
@@ -709,83 +710,5 @@ function testHarufLogic() {
 }
 
 
-function testHarufBetLogic() {
-  console.log('\n🧪 Testing Haruf Bet Logic\n' + '='.repeat(40));
-
-  const testCases = [
-    {
-      description: 'A1 position with matching first digit',
-      bet: { betNumber: '5', betType: 'haruf', betData: { harufDigit: '5', harufPosition: 'A' } },
-      result: { jodi: '52', haruf: '5', crossing: '52' },
-      expected: true,
-      reason: 'Should win when first digit matches A1 position'
-    },
-    {
-      description: 'B2 position with matching second digit',
-      bet: { betNumber: '2', betType: 'haruf', betData: { harufDigit: '2', harufPosition: 'B' } },
-      result: { jodi: '52', haruf: '2', crossing: '52' },
-      expected: true,
-      reason: 'Should win when second digit matches B2 position'
-    },
-    {
-      description: 'A1 position with non-matching first digit',
-      bet: { betNumber: '3', betType: 'haruf', betData: { harufDigit: '3', harufPosition: 'A' } },
-      result: { jodi: '52', haruf: '5', crossing: '52' },
-      expected: false,
-      reason: 'Should lose when first digit does not match A1 position'
-    },
-    {
-      description: 'Bet with just number (no position)',
-      bet: { betNumber: '5', betType: 'haruf', betData: {} },
-      result: { jodi: '52', haruf: '5', crossing: '52' },
-      expected: true,
-      reason: 'Should default to A1 position and check first digit'
-    },
-    {
-      description: 'Bet with A1 in betNumber',
-      bet: { betNumber: 'A5', betType: 'haruf', betData: {} },
-      result: { jodi: '52', haruf: '5', crossing: '52' },
-      expected: true,
-      reason: 'Should extract A1 position from betNumber'
-    },
-    {
-      description: 'Bet with B2 in betNumber',
-      bet: { betNumber: 'B2', betType: 'haruf', betData: {} },
-      result: { jodi: '52', haruf: '2', crossing: '52' },
-      expected: true,
-      reason: 'Should extract B2 position from betNumber'
-    }
-  ];
-
-  let passed = 0;
-  let failed = 0;
-
-  testCases.forEach((test, index) => {
-    console.log(`\nTest ${index + 1}: ${test.description}`);
-    console.log('-' + '-'.repeat(test.description.length + 2));
-    
-    const result = checkBetWinning(test.bet, test.result);
-    const passedTest = result === test.expected;
-    
-    if (passedTest) {
-      passed++;
-      console.log(`✅ PASS: ${test.reason}`);
-    } else {
-      failed++;
-      console.error(`❌ FAIL: ${test.reason}`);
-      console.log(`   Expected: ${test.expected ? 'WIN' : 'LOSE'}, Got: ${result ? 'WIN' : 'LOSE'}`);
-    }
-    
-    console.log(`   Bet: ${JSON.stringify(test.bet)}`);
-    console.log(`   Result: ${JSON.stringify(test.result)}`);
-  });
-
-  console.log('\n' + '='.repeat(40));
-  console.log(`📊 Test Results: ${passed} passed, ${failed} failed`);
-  console.log('='.repeat(40) + '\n');
-}
-
-// Uncomment to run tests
-// testHarufBetLogic();
 
 export default router;
