@@ -749,16 +749,19 @@ const GamePlay = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Game Info & Timer */}
-          <div className="lg:col-span-1 space-y-6">
+          {/* <div className="lg:col-span-1 space-y-6"> */}
             {/* Wallet Balance */}
-            <Card className="bg-card/90 backdrop-blur-sm border-border/50">
-              <CardHeader>
+            {/* <Card className="bg-card/90 backdrop-blur-sm border-border/50"> */}
+              {/* <CardHeader>
                 <CardTitle className="text-foreground flex items-center gap-2">
                   <Wallet className="h-5 w-5" />
                   Wallet Balance (Real Data)
                 </CardTitle>
-              </CardHeader>
-              <CardContent>
+              </CardHeader> */}
+
+
+
+              {/* <CardContent>
                 <div className="text-center">
                   <p className="text-3xl font-bold text-matka-gold">
                     ���{wallet?.depositBalance.toLocaleString() || 0}
@@ -790,18 +793,20 @@ const GamePlay = () => {
                     </Button>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </CardContent> */}
+            {/* </Card> */}
+
+
 
             {/* Game Timer */}
-            <Card className="bg-card/90 backdrop-blur-sm border-border/50">
-              <CardHeader>
+            {/* <Card className="bg-card/90 backdrop-blur-sm border-border/50"> */}
+              {/* <CardHeader>
                 <CardTitle className="text-foreground flex items-center gap-2">
                   <Clock className="h-5 w-5" />
                   Game Timer
                 </CardTitle>
-              </CardHeader>
-              <CardContent>
+              </CardHeader> */}
+              {/* <CardContent>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-matka-gold mb-2">
                     {String(countdown.hours).padStart(2, "0")}:
@@ -833,7 +838,7 @@ const GamePlay = () => {
                   </div>
                 </div>
 
-                {/* Current Payout Rates Display */}
+                
                 <div className="mt-4 p-3 bg-matka-gold/10 rounded-lg border border-matka-gold/30">
                   <p className="text-xs font-semibold text-matka-gold mb-2">
                     Real Payout Rates (From MongoDB):
@@ -859,11 +864,11 @@ const GamePlay = () => {
                     </div>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </CardContent> */}
+            {/* </Card> */}
 
             {/* Hot Numbers */}
-            <Card className="bg-card/90 backdrop-blur-sm border-border/50">
+            {/* <Card className="bg-card/90 backdrop-blur-sm border-border/50">
               <CardHeader>
                 <CardTitle className="text-foreground flex items-center gap-2">
                   <Star className="h-5 w-5" />
@@ -916,8 +921,11 @@ const GamePlay = () => {
                   </div>
                 </div>
               </CardContent>
-            </Card>
-          </div>
+            </Card> */}
+          {/* </div> */}
+
+
+
 
           {/* Game Play Area */}
           <div className="lg:col-span-2">
@@ -1022,7 +1030,8 @@ const GamePlay = () => {
                     harufBets: updated,
                   }));
                 }}
-                className="flex-1 h-9 bg-gray-600 rounded text-white text-center font-medium text-sm border-none outline-none placeholder-gray-400 focus:bg-gray-500 transition-colors"
+               className="w-full max-w-[100px] sm:max-w-full h-9 bg-gray-600 rounded text-white text-center font-medium text-sm border-none outline-none placeholder-gray-400 focus:bg-gray-500 transition-colors"
+
                 max="5000"
               />
             </div>
@@ -1056,7 +1065,8 @@ const GamePlay = () => {
                     harufBets: updated,
                   }));
                 }}
-                className="flex-1 h-9 bg-gray-600 rounded text-white text-center font-medium text-sm border-none outline-none placeholder-gray-400 focus:bg-gray-500 transition-colors"
+               className="w-full max-w-[100px] sm:max-w-full h-9 bg-gray-600 rounded text-white text-center font-medium text-sm border-none outline-none placeholder-gray-400 focus:bg-gray-500 transition-colors"
+
                 max="5000"
               />
             </div>
