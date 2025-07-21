@@ -84,6 +84,12 @@ const AdminBets = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
+  const [gameId, setGameId] = useState("");
+const [gamesList, setGamesList] = useState<{ _id: string; name: string }[]>([]);
+const [startTime, setStartTime] = useState("");
+const [endTime, setEndTime] = useState("");
+
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -108,6 +114,27 @@ const AdminBets = () => {
 
     return () => clearInterval(interval);
   }, [autoRefresh, statusFilter, gameTypeFilter]);
+
+
+  useEffect(() => {
+  const fetchGames = async () => {
+    const token = localStorage.getItem("admin_token");
+    try {
+      const res = await fetch(`${BASE_URL}/api/admin/games/dropdown`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await res.json();
+      console.log("Games Response:", data);
+      if (data.success) setGamesList(data.data);
+    } catch (err) {
+      console.error("Failed to load games:", err);
+    }
+  };
+  fetchGames();
+}, []);
+
 
   const fetchBets = async () => {
     try {
@@ -199,6 +226,45 @@ const AdminBets = () => {
         );
     }
   };
+
+const handleExport = async () => {
+  if (!gameId || !startTime || !endTime) {
+    alert("Please select game and both date/time fields");
+    return;
+  }
+
+  const token = localStorage.getItem("admin_token");
+
+  try {
+    const response = await fetch(
+      `${BASE_URL}/api/admin/export-bets?gameId=${gameId}&startTime=${startTime}&endTime=${endTime}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) throw new Error("Export failed");
+
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "bets_export.csv";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  } catch (err) {
+    console.error("Download failed", err);
+      console.error("❌ Export failed:", err.stack || err);
+    alert("Failed to export bets");
+  }
+};
+
+
+
+
 
   const getBetTypeIcon = (betType: string) => {
     switch (betType) {
@@ -381,6 +447,59 @@ const groupedBets = Object.values(groupedBetsMap);
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+  {/* Game dropdown */}
+  <div>
+    <label className="text-sm text-gray-400 mb-2 block">Game</label>
+    <Select value={gameId} onValueChange={setGameId}>
+      <SelectTrigger className="bg-[#1a1a1a] border-gray-600 text-white">
+        <SelectValue placeholder="Select Game" />
+      </SelectTrigger>
+      <SelectContent>
+        {gamesList.map((g) => (
+          <SelectItem key={g._id} value={g._id}>
+            {g.name}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  </div>
+
+  {/* Start time */}
+  <div>
+    <label className="text-sm text-gray-400 mb-2 block">Start Time</label>
+    <input
+      type="datetime-local"
+      value={startTime}
+      onChange={(e) => setStartTime(e.target.value)}
+      className="w-full bg-[#1a1a1a] border border-gray-600 text-white rounded p-2"
+    />
+  </div>
+
+  {/* End time */}
+  <div>
+    <label className="text-sm text-gray-400 mb-2 block">End Time</label>
+    <input
+      type="datetime-local"
+      value={endTime}
+      onChange={(e) => setEndTime(e.target.value)}
+      className="w-full bg-[#1a1a1a] border border-gray-600 text-white rounded p-2"
+    />
+  </div>
+
+  {/* Export Button */}
+  <div className="flex items-end">
+    <Button
+      className="w-full bg-green-600 text-white hover:bg-green-700"
+      onClick={handleExport}
+    >
+      Export CSV
+    </Button>
+  </div>
+</div>
+
+
               <div>
                 <label className="text-sm text-gray-400 mb-2 block">
                   Game Type
@@ -425,6 +544,9 @@ const groupedBets = Object.values(groupedBetsMap);
                 >
                   Apply Filters
                 </Button>
+
+         
+
               </div>
             </div>
           </CardContent>

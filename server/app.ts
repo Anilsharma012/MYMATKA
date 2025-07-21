@@ -66,6 +66,7 @@ import {
 import resultsRouter from "./routes/results";
 import gameStatusRouter from "./routes/gameStatus";
 import ResultScheduler from "./services/resultScheduler";
+import adminExportRoutes from "./routes/adminExport";
 import auth from "./middleware/auth";
 import { adminAuth, superAdminAuth } from "./middleware/adminAuth";
 
@@ -205,6 +206,8 @@ app.delete("/api/admin/games/:gameId", adminAuth, deleteGame);
 app.post("/api/admin/games/:gameId/declare-result", adminAuth, declareResult);
 app.put("/api/admin/games/:gameId/force-status", adminAuth, forceGameStatus);
 app.get("/api/admin/games/:gameId/analytics", adminAuth, getGameAnalytics);
+app.use("/api/admin", adminExportRoutes);
+
 
 // Quick admin endpoint to make all games available for betting (for testing)
 app.post("/api/admin/games/open-all-for-betting", (req, res) => {
