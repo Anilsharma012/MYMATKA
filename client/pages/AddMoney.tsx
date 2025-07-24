@@ -100,6 +100,9 @@ const AddMoney = () => {
       const data = await response.json();
       if (data.success) {
         setGateways(data.data);
+
+
+
       } else {
         console.error("API returned error:", data.message);
         setGateways([]);
@@ -386,9 +389,9 @@ const AddMoney = () => {
     }
   };
 
-  const upiGateways = gateways.filter((g) => g.type === "upi");
-  const bankGateways = gateways.filter((g) => g.type === "bank");
-  const cryptoGateways = gateways.filter((g) => g.type === "crypto");
+const upiGateways = gateways.filter((g) => g.type?.toLowerCase() === "upi");
+const bankGateways = gateways.filter((g) => g.type?.toLowerCase() === "bank");
+const cryptoGateways = gateways.filter((g) => g.type?.toLowerCase() === "crypto");
 
   return (
     <div className="min-h-screen bg-matka-dark">
@@ -641,7 +644,7 @@ const AddMoney = () => {
                         ₹{request.amount.toLocaleString()}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        {request.gatewayId.displayName}
+                         {request.gatewayId?.displayName || "N/A"}
                       </p>
                       <p className="text-xs text-muted-foreground">
                         {request.referenceId}

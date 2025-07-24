@@ -41,7 +41,7 @@ const PaymentGatewaySchema: Schema = new Schema(
     },
     name: {
       type: String,
-      required: true,
+      required: false,
       trim: true,
     },
     displayName: {

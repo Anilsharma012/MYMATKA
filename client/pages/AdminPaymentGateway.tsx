@@ -190,6 +190,13 @@ const AdminPaymentGateway = () => {
     setShowAddModal(true);
   };
 
+
+  if (!formData.name || formData.name.trim() === "") {
+  const autoName = `${formData.type}_${Date.now()}`;
+  setFormData((prev) => ({ ...prev, name: autoName }));
+}
+
+
   const handleSubmit = async () => {
     try {
       const token = localStorage.getItem("admin_token");
@@ -647,6 +654,24 @@ const AdminPaymentGateway = () => {
                       className="col-span-3 bg-input border-border text-foreground"
                     />
                   </div>
+
+                 <div className="grid grid-cols-4 items-center gap-4">
+  <Label>Display Name *</Label>
+  <Input
+    type="text"
+    value={formData.displayName}
+     onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          displayName: e.target.value,
+                        }))
+                      }
+    className="col-span-3 bg-input border-border text-foreground"
+  />
+</div>
+
+
+
                   <div className="grid grid-cols-4 items-center gap-4">
                     <Label
                       htmlFor="accountNumber"

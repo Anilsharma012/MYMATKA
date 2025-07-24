@@ -447,7 +447,7 @@ const AdminPaymentRequests = () => {
                                 ₹{request.amount.toLocaleString()}
                               </p>
                               <p className="text-gray-400 text-sm">
-                                via {request.gatewayId.displayName}
+                                via {request.gatewayId?.displayName || "Unknown Gateway" }
                               </p>
                               {request.transactionId && (
                                 <p className="text-blue-400 text-sm">

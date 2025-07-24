@@ -40,9 +40,10 @@ export const createGateway: RequestHandler = async (req, res) => {
   try {
     const adminUser = (req as AdminRequest).admin;
     const gatewayData = {
-      ...req.body,
-      createdBy: adminUser?._id,
-    };
+  ...req.body,
+  name: req.body.name?.trim() || `${req.body.type}_${Date.now()}`, // ✅ yeh line add karo
+  createdBy: adminUser?._id,
+};
 
     const gateway = new PaymentGateway(gatewayData);
     await gateway.save();
