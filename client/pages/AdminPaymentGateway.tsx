@@ -201,8 +201,8 @@ const AdminPaymentGateway = () => {
     try {
       const token = localStorage.getItem("admin_token");
       const url = editingGateway
-        ? `/api/admin/payment-gateways/${editingGateway._id}`
-        : "/api/admin/payment-gateways";
+        ? `${BASE_URL}/api/admin/payment-gateways/${editingGateway._id}`
+        : `${BASE_URL}/api/admin/payment-gateways`;
       const method = editingGateway ? "PUT" : "POST";
 
       const response = await fetch(url, {
