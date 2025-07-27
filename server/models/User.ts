@@ -20,6 +20,11 @@ export interface IUser extends Document {
   points: number;
   referredBy?: mongoose.Types.ObjectId;
   referredUsers: mongoose.Types.ObjectId[];
+  
+  depositBalance: number;
+  bonusBalance: number;
+  commissionBalance: number;
+  winningBalance: number;
   kycStatus: "pending" | "verified" | "rejected";
   kycDocuments?: {
     aadharNumber?: string;
@@ -117,6 +122,29 @@ const UserSchema: Schema = new Schema(
       default: 0,
       min: 0,
     },
+
+
+    depositBalance: {
+  type: Number,
+  default: 0,
+  min: 0,
+},
+bonusBalance: {
+  type: Number,
+  default: 0,
+  min: 0,
+},
+commissionBalance: {
+  type: Number,
+  default: 0,
+  min: 0,
+},
+winningBalance: {
+  type: Number,
+  default: 0,
+  min: 0,
+},
+
     referredBy: {
       type: Schema.Types.ObjectId,
       ref: "User",
