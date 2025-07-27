@@ -1,8 +1,4 @@
-// src/config.js
-// Ultra-robust BASE_URL configuration that handles all edge cases
-
-// CRITICAL: For fly.dev deployments, BASE_URL must ALWAYS be empty string (same-origin)
-// This prevents localhost URLs from being used in production
+// Ultra-robust BASE_URL configuration for all environments
 
 let BASE_URL = "";
 
@@ -11,65 +7,59 @@ const isBrowser = typeof window !== 'undefined';
 const hostname = isBrowser ? window.location.hostname : '';
 const href = isBrowser ? window.location.href : '';
 
-console.log('🔧 Ultra-robust config detection:', {
+console.log('🔧 Config detection:', {
   isBrowser,
   hostname,
   href,
   NODE_ENV: import.meta.env.MODE,
   DEV: import.meta.env.DEV,
   PROD: import.meta.env.PROD,
-  VITE_API_BASE_URL: import.meta.env.VITE_API_BASE_URL
+  VITE_API_BASE_URL: import.meta.env.VITE_API_BASE_URL,
 });
 
-// RULE 1: If we're on fly.dev, ALWAYS use same-origin (empty string)
+// ✅ Rule 1: fly.dev = always same-origin (""), for serverless domains
 if (isBrowser && hostname.includes('.fly.dev')) {
   BASE_URL = "";
-  console.log('🔧 ✅ FLY.DEV DETECTED: Using same-origin (empty string)');
+  console.log('✅ fly.dev detected → using same-origin ("")');
 }
-// RULE 2: If we're in production mode, use same-origin
+
+// ✅ Rule 2: If in PRODUCTION & env variable provided → use it
+else if (import.meta.env.PROD && import.meta.env.VITE_API_BASE_URL) {
+  BASE_URL = import.meta.env.VITE_API_BASE_URL;
+  console.log('✅ PRODUCTION with VITE_API_BASE_URL:', BASE_URL);
+}
+
+// ✅ Rule 3: If in PRODUCTION but no custom URL → use same-origin
 else if (import.meta.env.PROD) {
   BASE_URL = "";
-  console.log('🔧 ✅ PRODUCTION MODE: Using same-origin (empty string)');
+  console.log('✅ PRODUCTION fallback → using same-origin ("")');
 }
-// RULE 3: Check for custom environment variable (development only)
+
+// ✅ Rule 4: In DEVELOPMENT → use VITE_API_BASE_URL if exists
 else if (import.meta.env.VITE_API_BASE_URL) {
   const envUrl = import.meta.env.VITE_API_BASE_URL;
-  // Security check: Never use localhost in production domains
   if (isBrowser && !hostname.includes('localhost') && envUrl.includes('localhost')) {
-    console.error('❌ SECURITY: Rejecting localhost URL in non-localhost environment');
+    console.error('❌ SECURITY WARNING: Blocking localhost BASE_URL in non-localhost domain!');
     BASE_URL = "";
   } else {
     BASE_URL = envUrl;
-    console.log('🔧 Using environment variable BASE_URL:', BASE_URL);
+    console.log('✅ DEVELOPMENT with VITE_API_BASE_URL:', BASE_URL);
   }
 }
-// RULE 4: Default to same-origin for all other cases
+
+// ✅ Default fallback (safe)
 else {
   BASE_URL = "";
-  console.log('🔧 ✅ DEFAULT: Using same-origin (empty string)');
+  console.log('✅ DEFAULT fallback → using same-origin ("")');
 }
 
-// SAFETY CHECK: Never allow localhost URLs in non-localhost environments
+// ✅ Safety override: never allow localhost BASE_URL in live site
 if (isBrowser && BASE_URL.includes('localhost') && !hostname.includes('localhost')) {
-  console.error('❌ EMERGENCY OVERRIDE: Localhost URL detected in production environment!');
-  console.error('   Current hostname:', hostname);
-  console.error('   Current BASE_URL:', BASE_URL);
-  console.error('   Forcing same-origin...');
+  console.error('❌ EMERGENCY: Localhost BASE_URL in production. Forcing empty string.');
   BASE_URL = "";
 }
 
-// FINAL CHECK: Log the result
-const finalUrl = BASE_URL || '(same-origin)';
-console.log('🔧 ✅ FINAL BASE_URL:', finalUrl);
-
-// Additional runtime validation for fly.dev
-if (isBrowser && hostname.includes('.fly.dev')) {
-  if (BASE_URL !== "") {
-    console.error('❌ CRITICAL ERROR: Non-empty BASE_URL in fly.dev environment!');
-    console.error('   This will cause network errors. Forcing empty string...');
-    BASE_URL = "";
-  }
-  console.log('🔧 ✅ FLY.DEV VALIDATION PASSED: BASE_URL is empty string');
-}
+// ✅ Final log
+console.log('✅ FINAL BASE_URL:', BASE_URL || "(same-origin)");
 
 export default BASE_URL;
