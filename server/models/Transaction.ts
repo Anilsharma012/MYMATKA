@@ -8,6 +8,7 @@ export interface ITransaction extends Document {
   description: string;
   gameId?: string;
   gameName?: string;
+   balanceAfter?: number;
   referenceId?: string;
   bankDetails?: {
     bankName: string;
@@ -81,6 +82,11 @@ const TransactionSchema: Schema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "User",
     },
+    balanceAfter: {
+  type: Number,
+  default: 0,
+}
+,
     processedAt: {
       type: Date,
     },
