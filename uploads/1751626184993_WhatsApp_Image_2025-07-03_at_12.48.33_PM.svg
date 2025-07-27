@@ -1,0 +1,6 @@
+<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="300" fill="#2a2a2a"/>
+  <text x="200" y="140" font-family="Arial" font-size="16" fill="#ffffff" text-anchor="middle">Payment Proof</text>
+  <text x="200" y="170" font-family="Arial" font-size="14" fill="#aaaaaa" text-anchor="middle">Placeholder Image</text>
+  <text x="200" y="190" font-family="Arial" font-size="12" fill="#888888" text-anchor="middle">Original file not available</text>
+</svg>

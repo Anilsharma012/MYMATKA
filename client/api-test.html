@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Connection Test</title>
+</head>
+<body>
+    <h1>API Connection Test</h1>
+    <button onclick="testAPI()">Test API Connection</button>
+    <div id="result"></div>
+
+    <script>
+        async function testAPI() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = 'Testing...';
+            
+            try {
+                // Test 1: Current origin
+                console.log('Testing current origin API...');
+                const response1 = await fetch('/api/auth/admin-login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mobile: 'test', password: 'test' })
+                });
+                
+                resultDiv.innerHTML = `
+                    <h3>Test Results:</h3>
+                    <p><strong>Current Origin API (${window.location.origin}/api/auth/admin-login):</strong> ${response1.status} ${response1.statusText}</p>
+                    <p><strong>Response:</strong> ${await response1.text()}</p>
+                `;
+                
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <h3>Error:</h3>
+                    <p>${error.message}</p>
+                    <p><strong>Current URL:</strong> ${window.location.href}</p>
+                    <p><strong>Origin:</strong> ${window.location.origin}</p>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
