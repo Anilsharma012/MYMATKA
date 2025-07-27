@@ -102,10 +102,11 @@ const AdminWithdrawals = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem("admin_token");
-      const url =
-        statusFilter === "all"
-          ? "/api/admin/transactions?type=withdrawal&limit=50"
-          : `/api/admin/transactions?type=withdrawal&status=${statusFilter}&limit=50`;
+     const url =
+  statusFilter === "all"
+    ? `${BASE_URL}/api/admin/transactions?type=withdrawal&limit=50`
+    : `${BASE_URL}/api/admin/transactions?type=withdrawal&status=${statusFilter}&limit=50`;
+
 
       const response = await fetch(url, {
         headers: {
