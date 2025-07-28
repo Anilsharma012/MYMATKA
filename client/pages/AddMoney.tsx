@@ -312,49 +312,50 @@ const AddMoney = () => {
     alert("Copied to clipboard!");
   };
 
-  const handleFileUpload = async (file: File) => {
-    setUploadingFile(true);
-    try {
-      const token = localStorage.getItem("matka_token");
-      if (!token) {
-        alert("Please login first");
-        return;
-      }
-
-      console.log("🔄 Uploading payment proof file:", file.name);
-
-      // Create FormData for file upload
-      const formData = new FormData();
-      formData.append("qr", file);
-
-      const response = await fetch(`${BASE_URL}/api/upload`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          // Don't set Content-Type header - let browser set it for FormData
-        },
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error(`Upload failed: ${response.status}`);
-      }
-
-      const data = await response.json();
-
-      if (data.success) {
-        console.log("✅ File uploaded successfully:", data.data.url);
-        setPaymentProof(data.data.url);
-      } else {
-        throw new Error(data.message || "Upload failed");
-      }
-    } catch (error) {
-      console.error("❌ File upload error:", error);
-      alert("Failed to upload payment proof. Please try again.");
-    } finally {
-      setUploadingFile(false);
+ const handleFileUpload = async (file: File) => {
+  setUploadingFile(true);
+  try {
+    const token = localStorage.getItem("matka_token");
+    if (!token) {
+      alert("Please login first");
+      return;
     }
-  };
+
+    console.log("🔄 Uploading payment proof file:", file.name);
+
+    const formData = new FormData();
+    formData.append("qr", file); // ✅ field name matches backend
+
+   const response = await fetch(`${BASE_URL}/api/upload/upload-qr`, {
+ // ✅ fixed route
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        // no content-type header
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error(`Upload failed: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    if (data.success) {
+      console.log("✅ File uploaded successfully:", data.url || data.data?.url);
+      setPaymentProof(data.url || data.data?.url); // ✅ defensive access
+    } else {
+      throw new Error(data.message || "Upload failed");
+    }
+  } catch (error) {
+    console.error("❌ File upload error:", error);
+    alert("Failed to upload payment proof. Please try again.");
+  } finally {
+    setUploadingFile(false);
+  }
+};
+
 
   const getStatusColor = (status: string) => {
     switch (status) {

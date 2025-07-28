@@ -84,24 +84,38 @@ const AdminPaymentRequests = () => {
   const navigate = useNavigate();
 
   // Utility function to properly encode payment proof URLs
-  const encodePaymentProofUrl = (url: string) => {
-    if (!url) return url;
+  // ✅ Updated encode function for all types of proof URLs
+const encodePaymentProofUrl = (url: string) => {
+  if (!url) return url;
 
-    console.log("🔍 Encoding payment proof URL:", url);
+  console.log("🔍 Encoding payment proof URL:", url);
 
-    // If it's a local API URL, encode only the filename part
-    if (url.startsWith("/api/uploads/")) {
-      const filename = url.substring("/api/uploads/".length);
-      const encodedUrl = `/api/uploads/${encodeURIComponent(filename)}`;
-      console.log("✅ Encoded URL:", encodedUrl);
-      return encodedUrl;
-    }
+  // ✅ If full http(s) CDN URL, return as-is after encoding
+  if (url.startsWith("http://") || url.startsWith("https://")) {
+    const encoded = encodeURI(url);
+    console.log("✅ Full URL (CDN):", encoded);
+    return encoded;
+  }
 
-    // For other URLs, use standard encoding
-    const encodedUrl = encodeURI(url);
-    console.log("✅ Standard encoded URL:", encodedUrl);
-    return encodedUrl;
-  };
+  // ✅ If it's a local API URL
+  if (url.startsWith("/api/uploads/")) {
+    const filename = url.substring("/api/uploads/".length);
+    const encoded = `/api/uploads/${encodeURIComponent(filename)}`;
+    console.log("✅ Encoded Local API URL:", encoded);
+    return encoded;
+  }
+
+  // ✅ Fallback: just encode whatever it is
+  const fallback = encodeURI(url);
+  console.log("✅ Fallback Encoded URL:", fallback);
+  return fallback;
+};
+
+
+
+  const getFullUrl = (url: string) => {
+  return url.startsWith("http") ? url : `${BASE_URL}${url}`;
+};
 
   useEffect(() => {
     const token = localStorage.getItem("admin_token");
@@ -560,110 +574,70 @@ const AdminPaymentRequests = () => {
                   )}
 
                   {selectedRequest.paymentProofUrl && (
-                    <div>
-                      <Label className="text-gray-300">Payment Proof</Label>
-                      <div className="mt-2 space-y-2">
-                        {/* Image Preview */}
-                        <div className="bg-gray-800 p-4 rounded-lg border border-gray-600">
-                          <div className="relative">
-                            <img
-                              src={encodePaymentProofUrl(
-                                selectedRequest.paymentProofUrl,
-                              )}
-                              alt="Payment Proof"
-                              className="max-w-full max-h-64 mx-auto rounded-lg shadow-lg"
-                              onLoad={(e) => {
-                                console.log(
-                                  "✅ Payment proof loaded successfully",
-                                );
-                                const fallback = (
-                                  e.target as HTMLImageElement
-                                ).parentElement?.querySelector(
-                                  ".fallback-content",
-                                ) as HTMLElement;
-                                if (fallback) fallback.style.display = "none";
-                              }}
-                              onError={(e) => {
-                                const actualSrc = (e.target as HTMLImageElement)
-                                  .src;
-                                console.error(
-                                  "❌ Payment proof failed to load:",
-                                );
-                                console.error(
-                                  "   Original URL:",
-                                  selectedRequest.paymentProofUrl,
-                                );
-                                console.error(
-                                  "   Encoded URL:",
-                                  encodePaymentProofUrl(
-                                    selectedRequest.paymentProofUrl,
-                                  ),
-                                );
-                                console.error("   Actual src:", actualSrc);
-                                (e.target as HTMLImageElement).style.display =
-                                  "none";
-                                const fallback = (
-                                  e.target as HTMLImageElement
-                                ).parentElement?.querySelector(
-                                  ".fallback-content",
-                                ) as HTMLElement;
-                                if (fallback) fallback.style.display = "block";
-                              }}
-                            />
-                            {/* Fallback content */}
-                            <div
-                              className="fallback-content text-center py-8"
-                              style={{ display: "none" }}
-                            >
-                              <div className="bg-red-500/20 border border-red-500/30 rounded-lg p-4 mb-4">
-                                <p className="text-red-400 font-semibold mb-2">
-                                  ⚠️ Payment Proof Not Available
-                                </p>
-                                <p className="text-gray-300 text-sm mb-2">
-                                  The uploaded image could not be displayed.
-                                </p>
-                                <p className="text-gray-400 text-xs break-all">
-                                  URL: {selectedRequest.paymentProofUrl}
-                                </p>
-                              </div>
-                              <div className="space-y-2">
-                                <p className="text-yellow-400 text-sm">
-                                  💡 Possible reasons:
-                                </p>
-                                <ul className="text-gray-400 text-xs space-y-1">
-                                  <li>
-                                    • Original file was not properly uploaded
-                                  </li>
-                                  <li>
-                                    • File may have been deleted from server
-                                  </li>
-                                  <li>
-                                    • URL format changed during system updates
-                                  </li>
-                                </ul>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        {/* Open in new tab button */}
-                        <Button
-                          variant="outline"
-                          onClick={() =>
-                            window.open(
-                              encodePaymentProofUrl(
-                                selectedRequest.paymentProofUrl,
-                              ),
-                              "_blank",
-                            )
-                          }
-                          className="w-full text-blue-400 border-blue-400 hover:bg-blue-400/20"
-                        >
-                          <ExternalLink className="h-4 w-4 mr-2" />
-                          Open in New Tab
-                        </Button>
-                      </div>
-                    </div>
-                  )}
+  <div>
+    <Label className="text-gray-300">Payment Proof</Label>
+    <div className="mt-2 space-y-2">
+      {/* Image Preview */}
+      <div className="bg-gray-800 p-4 rounded-lg border border-gray-600">
+        <div className="relative">
+          <img
+            src={getFullUrl(encodePaymentProofUrl(selectedRequest.paymentProofUrl))}
+            alt="Payment Proof"
+            className="max-w-full max-h-64 mx-auto rounded-lg shadow-lg"
+            onLoad={(e) => {
+              console.log("✅ Payment proof loaded successfully");
+              const fallback = (e.target as HTMLImageElement).parentElement?.querySelector(".fallback-content") as HTMLElement;
+              if (fallback) fallback.style.display = "none";
+            }}
+            onError={(e) => {
+              const actualSrc = (e.target as HTMLImageElement).src;
+              console.error("❌ Payment proof failed to load:");
+              console.error("   Original URL:", selectedRequest.paymentProofUrl);
+              console.error("   Encoded URL:", encodePaymentProofUrl(selectedRequest.paymentProofUrl));
+              console.error("   Actual src:", actualSrc);
+              (e.target as HTMLImageElement).style.display = "none";
+              const fallback = (e.target as HTMLImageElement).parentElement?.querySelector(".fallback-content") as HTMLElement;
+              if (fallback) fallback.style.display = "block";
+            }}
+          />
+          {/* Fallback content */}
+          <div className="fallback-content text-center py-8" style={{ display: "none" }}>
+            <div className="bg-red-500/20 border border-red-500/30 rounded-lg p-4 mb-4">
+              <p className="text-red-400 font-semibold mb-2">⚠️ Payment Proof Not Available</p>
+              <p className="text-gray-300 text-sm mb-2">
+                The uploaded image could not be displayed.
+              </p>
+              <p className="text-gray-400 text-xs break-all">
+                URL: {selectedRequest.paymentProofUrl}
+              </p>
+            </div>
+            <div className="space-y-2">
+              <p className="text-yellow-400 text-sm">💡 Possible reasons:</p>
+              <ul className="text-gray-400 text-xs space-y-1">
+                <li>• Original file was not properly uploaded</li>
+                <li>• File may have been deleted from server</li>
+                <li>• URL format changed during system updates</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Open in new tab button */}
+      <Button
+        variant="outline"
+        onClick={() =>
+          window.open(getFullUrl(encodePaymentProofUrl(selectedRequest.paymentProofUrl)), "_blank")
+        }
+        className="w-full text-blue-400 border-blue-400 hover:bg-blue-400/20"
+      >
+        <ExternalLink className="h-4 w-4 mr-2" />
+        Open in New Tab
+      </Button>
+    </div>
+  </div>
+)}
+
 
                   {selectedRequest.userNotes && (
                     <div>
@@ -749,76 +723,62 @@ const AdminPaymentRequests = () => {
               <div className="space-y-4 pr-2">
                 {selectedProofUrl && (
                   <div className="bg-gray-800 p-4 rounded-lg border border-gray-600">
-                    <div className="relative">
-                      <img
-                        src={encodePaymentProofUrl(selectedProofUrl)}
-                        alt="Payment Proof"
-                        className="max-w-full h-auto mx-auto rounded-lg shadow-lg cursor-zoom-in"
-                        style={{ maxHeight: "calc(90vh - 200px)" }}
-                        onClick={() => {
-                          // Open in new tab when clicked
-                          window.open(
-                            encodePaymentProofUrl(selectedProofUrl),
-                            "_blank",
-                          );
-                        }}
-                        onLoad={() => {
-                          console.log(
-                            "✅ Payment proof modal image loaded successfully",
-                          );
-                        }}
-                        onError={(e) => {
-                          const actualSrc = (e.target as HTMLImageElement).src;
-                          console.error(
-                            "❌ Payment proof modal image failed to load:",
-                          );
-                          console.error("   Original URL:", selectedProofUrl);
-                          console.error(
-                            "   Encoded URL:",
-                            encodePaymentProofUrl(selectedProofUrl),
-                          );
-                          console.error("   Actual src:", actualSrc);
-                          (e.target as HTMLImageElement).style.display = "none";
-                          const fallback = (
-                            e.target as HTMLImageElement
-                          ).parentElement?.querySelector(
-                            ".modal-fallback",
-                          ) as HTMLElement;
-                          if (fallback) fallback.style.display = "block";
-                        }}
-                      />
-                      {/* Fallback content */}
-                      <div
-                        className="modal-fallback text-center py-8"
-                        style={{ display: "none" }}
-                      >
-                        <div className="bg-red-500/20 border border-red-500/30 rounded-lg p-6 mb-4">
-                          <div className="text-6xl mb-4">🚫</div>
-                          <p className="text-red-400 font-semibold mb-2">
-                            Payment Proof Not Available
-                          </p>
-                          <p className="text-gray-300 text-sm mb-4">
-                            The payment proof image cannot be displayed. This
-                            might be because:
-                          </p>
-                          <ul className="text-gray-400 text-sm text-left space-y-1 max-w-md mx-auto">
-                            <li>• The file was not properly uploaded</li>
-                            <li>• The file has been moved or deleted</li>
-                            <li>• There was an issue with the upload system</li>
-                            <li>• The URL format has changed</li>
-                          </ul>
-                        </div>
-                        <div className="bg-gray-700 rounded-lg p-3 mb-4">
-                          <p className="text-gray-400 text-xs break-all">
-                            <strong>URL:</strong> {selectedProofUrl}
-                          </p>
-                        </div>
-                        <p className="text-yellow-400 text-sm">
-                          💡 You may need to ask the user to re-upload their
-                          payment proof
-                        </p>
-                      </div>
-                    </div>
+                   <div className="relative">
+  <img
+    src={getFullUrl(encodePaymentProofUrl(selectedProofUrl))}
+    alt="Payment Proof"
+    className="max-w-full h-auto mx-auto rounded-lg shadow-lg cursor-zoom-in"
+    style={{ maxHeight: "calc(90vh - 200px)" }}
+    onClick={() => {
+      window.open(getFullUrl(encodePaymentProofUrl(selectedProofUrl)), "_blank");
+    }}
+    onLoad={() => {
+      console.log("✅ Payment proof modal image loaded successfully");
+      const fallback = (event.target as HTMLImageElement).parentElement?.querySelector(
+        ".modal-fallback"
+      ) as HTMLElement;
+      if (fallback) fallback.style.display = "none";
+    }}
+    onError={(e) => {
+      const actualSrc = (e.target as HTMLImageElement).src;
+      console.error("❌ Payment proof modal image failed to load:");
+      console.error("   Original URL:", selectedProofUrl);
+      console.error("   Encoded URL:", encodePaymentProofUrl(selectedProofUrl));
+      console.error("   Actual src:", actualSrc);
+      (e.target as HTMLImageElement).style.display = "none";
+      const fallback = (e.target as HTMLImageElement).parentElement?.querySelector(
+        ".modal-fallback"
+      ) as HTMLElement;
+      if (fallback) fallback.style.display = "block";
+    }}
+  />
+  
+  {/* Fallback content */}
+  <div className="modal-fallback text-center py-8" style={{ display: "none" }}>
+    <div className="bg-red-500/20 border border-red-500/30 rounded-lg p-6 mb-4">
+      <div className="text-6xl mb-4">🚫</div>
+      <p className="text-red-400 font-semibold mb-2">Payment Proof Not Available</p>
+      <p className="text-gray-300 text-sm mb-4">
+        The payment proof image cannot be displayed. This might be because:
+      </p>
+      <ul className="text-gray-400 text-sm text-left space-y-1 max-w-md mx-auto">
+        <li>• The file was not properly uploaded</li>
+        <li>• The file has been moved or deleted</li>
+        <li>• There was an issue with the upload system</li>
+        <li>• The URL format has changed</li>
+      </ul>
+    </div>
+    <div className="bg-gray-700 rounded-lg p-3 mb-4">
+      <p className="text-gray-400 text-xs break-all">
+        <strong>URL:</strong> {selectedProofUrl}
+      </p>
+    </div>
+    <p className="text-yellow-400 text-sm">
+      💡 You may need to ask the user to re-upload their payment proof
+    </p>
+  </div>
+</div>
+
                   </div>
                 )}
               </div>
