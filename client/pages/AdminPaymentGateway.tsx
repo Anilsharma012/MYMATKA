@@ -285,11 +285,34 @@ const AdminPaymentGateway = () => {
     }
   };
 
-  const handleFileUpload = async (file: File) => {
-    // Mock file upload - in production, you'd use actual file upload service
-    const mockUrl = `https://cdn.matkahub.com/qr/${Date.now()}_${file.name}`;
-    setFormData((prev) => ({ ...prev, qrCodeUrl: mockUrl }));
-  };
+const handleFileUpload = async (file: File) => {
+  try {
+    const token = localStorage.getItem("admin_token");
+
+    const formDataUpload = new FormData();
+    formDataUpload.append("qr", file); // 👈 "qr" field name must match backend multer
+
+    const response = await fetch(`${BASE_URL}/api/upload/upload-qr`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`, // if auth required
+      },
+      body: formDataUpload,
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      // ✅ Set QR code URL to save in backend later
+      setFormData((prev) => ({ ...prev, qrCodeUrl: data.url }));
+    } else {
+      alert(data.message || "QR upload failed");
+    }
+  } catch (error) {
+    console.error("QR Upload Error:", error);
+    alert("Failed to upload QR Code");
+  }
+};
 
   if (loading) {
     return (

@@ -6,6 +6,8 @@ import path from "path";
 import dotenv from "dotenv";
 import upload from "./middleware/fileUpload";
 import connectDB from "./config/database";
+import uploadRoutes from "./routes/uploads";
+
 import {
   registerUser,
   loginUser,
@@ -184,6 +186,9 @@ app.get("/api/test", (req, res) => {
     url: req.url
   });
 });
+
+app.use("/api/upload", uploadRoutes);
+
 
 // Auth health check
 app.get("/api/auth/health", (_req, res) => {
@@ -728,7 +733,8 @@ app.put(
 app.put("/api/admin/support/tickets/:ticketId/assign", adminAuth, assignTicket);
 
 // Serve uploaded files
-app.use("/api/uploads", express.static(path.join(process.cwd(), "uploads")));
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+
 
 // 404 handler for API routes (after all API routes are defined)
 app.use("/api/*", (req, res) => {

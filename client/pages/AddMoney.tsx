@@ -100,9 +100,6 @@ const AddMoney = () => {
       const data = await response.json();
       if (data.success) {
         setGateways(data.data);
-
-
-
       } else {
         console.error("API returned error:", data.message);
         setGateways([]);
@@ -389,9 +386,11 @@ const AddMoney = () => {
     }
   };
 
-const upiGateways = gateways.filter((g) => g.type?.toLowerCase() === "upi");
-const bankGateways = gateways.filter((g) => g.type?.toLowerCase() === "bank");
-const cryptoGateways = gateways.filter((g) => g.type?.toLowerCase() === "crypto");
+  const upiGateways = gateways.filter((g) => g.type?.toLowerCase() === "upi");
+  const bankGateways = gateways.filter((g) => g.type?.toLowerCase() === "bank");
+  const cryptoGateways = gateways.filter(
+    (g) => g.type?.toLowerCase() === "crypto",
+  );
 
   return (
     <div className="min-h-screen bg-matka-dark">
@@ -644,7 +643,7 @@ const cryptoGateways = gateways.filter((g) => g.type?.toLowerCase() === "crypto"
                         ₹{request.amount.toLocaleString()}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                         {request.gatewayId?.displayName || "N/A"}
+                        {request.gatewayId?.displayName || "N/A"}
                       </p>
                       <p className="text-xs text-muted-foreground">
                         {request.referenceId}
@@ -705,16 +704,32 @@ const cryptoGateways = gateways.filter((g) => g.type?.toLowerCase() === "crypto"
                           </Button>
                         </div>
                       </div>
-                      {selectedGateway.qrCodeUrl && (
-                        <div className="text-center">
-                          <div className="w-48 h-48 bg-white mx-auto rounded-lg flex items-center justify-center">
-                            <QrCode className="h-32 w-32 text-black" />
-                          </div>
-                          <p className="text-sm text-muted-foreground mt-2">
-                            Scan QR code to pay
-                          </p>
-                        </div>
-                      )}
+       {selectedGateway.qrCodeUrl && (() => {
+  const qrUrl = selectedGateway.qrCodeUrl;
+
+  // ✅ Dynamically replace base URL only if needed
+  const encodedUrl = encodeURI(
+    qrUrl.includes("cdn.matkahub.com")
+      ? qrUrl.replace("https://cdn.matkahub.com", BASE_URL)
+      : qrUrl
+  );
+
+  console.log("✅ Final Encoded QR URL:", encodedUrl);
+
+  return (
+    <div className="text-center">
+      <img
+        src={encodedUrl}
+        alt="QR Code"
+        className="w-48 h-48 object-contain mx-auto rounded-lg bg-white"
+      />
+      <p className="text-sm text-muted-foreground mt-2">
+        Scan QR code to pay
+      </p>
+    </div>
+  );
+})()}
+
                     </div>
                   )}
 

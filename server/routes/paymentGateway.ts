@@ -398,7 +398,8 @@ export const uploadFile: RequestHandler = async (req, res) => {
     }
 
     // Generate the URL for the uploaded file
-    const fileUrl = `/api/uploads/${req.file.filename}`;
+  const fileUrl = `/uploads/qr/${req.file.filename}`; 
+
 
     console.log("✅ File uploaded successfully:", req.file.filename);
 
