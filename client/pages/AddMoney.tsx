@@ -325,7 +325,7 @@ const AddMoney = () => {
 
       // Create FormData for file upload
       const formData = new FormData();
-      formData.append("paymentProof", file);
+      formData.append("qr", file);
 
       const response = await fetch(`${BASE_URL}/api/upload`, {
         method: "POST",

@@ -61,4 +61,20 @@ router.post("/upload-qr", upload.single("qr"), (req, res) => {
 });
 
 
+
+router.post("/upload", upload.single("paymentProof"), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ success: false, message: "No file uploaded" });
+  }
+
+  const fileUrl = `/uploads/qr/${req.file.filename}`;
+  return res.json({
+    success: true,
+    message: "Uploaded successfully",
+    data: { url: fileUrl },
+  });
+});
+
+
+
 export default router;
